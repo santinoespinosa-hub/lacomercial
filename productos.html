@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Comercial</title>
+    <link rel="stylesheet" href="./css/estilos.css">
+</head>
+<body>
+    <header>
+        <h1>La Comercial</h1>
+    </header>
+    <nav class="menu">
+        <div class="contenedor">
+            <ul class="menu-flex">
+                <li><a href="./">Inicio</a></li>
+                <li><a href="./nosotros.html">Nosotros</a></li>
+                <li><a href="./productos.html">Productos</a></li>
+                <li><a href="./contactenos.html">Contáctenos</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="contenedor sombra">
+        <h2>Listado de productos</h2>
+        <section>
+            
+
+            <article>
+                <h3>103 - iPhone SE</h3>
+                <div>
+                    <img src="./imagenes/productos/iPhone-SE-Black.jpg" alt="">
+                </div>
+                <p>
+                   
+                    <img src="./imagenes/memory.svg" alt=""> Procesador: A13 Bionic <br>
+                    <img src="./imagenes/storage.svg" alt="">Almacenamiento: 128 GB <br>
+                    <img src="./imagenes/photo_camera.svg" alt="">Cámaras: 7 Mpx / 12 Mpx <br>
+                    <img src="./imagenes/aod.svg" alt="">Pantalla: 4,7 IPS Retina
+                </p>
+                <h4>$ 1749999.-</h4>
+                <a href="#">Comprar</a>
+            </article>
+            <article>
+                <h3>102 - Motorola Moto G-100</h3>
+                <div class="servicio-icono">
+                    <img src="./imagenes/productos/Motorola-Moto-G100.jpg" alt="">
+                </div class="servicio-icono">
+                <p>
+                <img src="./imagenes/memory.svg" alt="">Procesador: Octa Core (3,2 GHz) <br>
+                  <img src="./imagenes/storage.svg" alt="">Almacenamiento: 128 GB <br>
+                <img src="./imagenes/photo_camera.svg" alt="">Cámaras: 13 Mpx / 64 Mpx <br>
+                    <img src="./imagenes/aod.svg" alt="">Pantalla: 6,7 FHD+ LTPS
+                </p>
+                <h4>$ 749999.-</h4>
+                <a href="#">Comprar</a>
+            </article>
+            <article class="servicio">
+                <h3>104 - iPhone 11 Pro Max</h3>
+                <div>
+                    <img src="./imagenes/productos/Iphone-11-Pro-Max.jpg" alt="">
+                </div>
+                <p>
+                 <img src="./imagenes/memory.svg" alt=""> Procesador: A13 Bionic <br>
+                 <img src="./imagenes/storage.svg" alt="">Almacenamiento: 256 GB <br>
+                    <img src="./imagenes/photo_camera.svg" alt="">Cámaras: 12 Mpx / 12 Mpx <br>
+                    <img src="./imagenes/aod.svg" alt="">Pantalla: 5,8 IPS Super Retina
+                </p>
+                <h4>$ 2328990.-</h4>
+                <a href="#">Comprar</a>
+            </article>
+            
+        </section>
+        <section class="carrito-compras">
+            <h3>carrito de compras</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Importe</th>
+                    </tr>                    
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Código">103</td>
+                        <td data-label="Nombre">iphone SE</td>
+                        <td data-label="Cantidad">
+                            <input 
+                            type="number"
+                            name="cantidad1"
+                            id="cantidad1"
+                            value="0"
+                            min="0"
+                            onchange="calcular()"
+                            />
+                        </td>
+                        <td data-label="Precio">$ <span id="precio1">1749999</span>.- </td>
+                        <td data-label="Importe">$ <span id="importe1"></span>.- </td>
+                        
+                    </tr>
+                    <tr>
+                        <td data-label="Código">102</td>
+                        <td data-label="Nombre">Motorola-moto G-100</td>
+                        <td data-label="Cantidad">
+                            <input 
+                            type="number"
+                            name="cantidad2"
+                            id="cantidad2"
+                            value="0"
+                            onchange="calcular()"
+                            />
+                        </td>
+                        <td data-label="Precio">$ <span id="precio2">749999</span>.- </td>
+                        <td data-label="Importe">$ <span id="importe2"></span>.- </td>
+                        
+                    </tr>
+                    <tr>
+                        <td data-label="Código">104</td>
+                        <td data-label="Nombre">iphone 11 Pro max</td>
+                        <td data-label="Cantidad">
+                            <input 
+                            type="number"
+                            name="cantidad3"
+                            id="cantidad3"
+                            value="0"
+                            onchange="calcular()"
+                            />
+                        </td>
+                        <td data-label="Precio">$ <span id="precio3">2328990</span>.- </td>
+                        <td data-label="Importe">$ <span id="importe3"></span>.- </td>
+                        
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td>Total</td>
+                        <td>$ <span id="total"></span>.- </td>
+
+                        
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+    
+        
+     
+    </main>
+    <footer>
+        <p>La Comercial - Todos los derechos reservados - 2026</p>
+    </footer>
+    <!-- Scripts -->
+     <script src="./controladores/carrito-compras.js"></script>
+</body>
+</html>

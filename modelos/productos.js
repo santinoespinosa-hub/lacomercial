@@ -1,45 +1,29 @@
-export const productos = [
+// URL para acceder a la API
+const URL = './api/datos.php?tabla=productos';
+/**
+* Selecciona los productos de la BD
+*/
+export async function seleccionarProductos() {
+    let res = await fetch(URL);
+    let datos = await res.json();
+    if(res.status !== 200) {
+        throw Error('Los datos no se encontraron');
+    }
+    return datos;
+}
 
-    {
-    codigo: 103,
-    nombre: "iphone SE",
-    descripcion: {
-        procesador: "A13 Bionic",
-        almacenamiento: "128 GB",
-        camaras: "7 Mp / 12 Mp",
-        pantalla: "4,7 IPS Retina",
-    },
-    precio: 1749999,
-    imagen: "iPhone-SE-Black.jpg",
-    categoria: "Telefonia"
-        
-    },
-    {
-    codigo: 102,
-    nombre: "Motorola Moto G-100",
-    descripcion: {
-        procesador: "Octa Core (3,2 GHz)",
-        almacenamiento: "128 GB",
-        camaras: "13 Mp / 64 Mp",
-        pantalla: "6,7 FHD+ LTPS",
-    },
-    precio: 1749999,
-    imagen: "Motorola-Moto-G100.jpg",
-    categoria: "Telefonia"
-        
-    },
-    {
-    codigo: 104,
-    nombre: "iPhone 11 Pro Max",
-    descripcion: {
-        procesador: "A13 Bionic",
-        almacenamiento: "256 GB",
-        camaras: "12 Mpx / 12 Mpx (Triple)",
-        pantalla: "5,6 IPS Super Retina XDR - OLED Multi - Touch",
-    },
-    precio: 1749999,
-    imagen: "iPhone-11-Pro-Max.jpg",
-    categoria: "Telefonia"
-        
-    },
-]
+/**
+ * inserta los datos en la BD
+ * @param {*} datos : Los datos a insertar
+ */
+export function insertarProducto(datos) {
+    fetch('${URL}&accion=insertar', {
+        method: 'POST',
+        body: datos
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        return data;
+    })
+}

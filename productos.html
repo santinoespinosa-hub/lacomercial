@@ -27,8 +27,9 @@
                 Cargar nuevo producto
             </button>
         </div>
+
         <section class="servicios" id="lista-productos">
-           
+        
         </section>   
         
         <!-- Carrito de compras -->
@@ -44,8 +45,8 @@
                         <th>Importe</th>
                     </tr>
                 </thead>
-                <tbody id="lista-tabla">
-                    
+                <tbody id="lista-tabla">                    
+                
                 </tbody>
                 <tfoot>
                     <tr>
@@ -59,33 +60,33 @@
         
 
     </main>
-
-    <!-- Dialogo modal para cargar / modificar productos -->
-     <dialog id="modal-producto">
-      
+    
+    <!-- Diálogo modal para cargar / modificar productos -->
+     <dialog id="dialogo-producto">
         <form id="form-producto" class="formulario-modal">
             <h3 id="dialogo-titulo">Cargar Producto</h3>
+            <input type="hidden" id="modo-edicion" value="false" />
+            <div class="campo-modal">
+                <label for="prod-codigo">Código:</label>
+                <input type="number" id="prod-codigo" min="1" required>
+            </div>
+            <div class="campo-modal">
+                <label for="prod-nombre">Nombre:</label>
+                <input type="text" id="prod-nombre" required>
+            </div>
+            <div class="campo-modal">
+                <label for="prod-categoria">Categoría:</label>
+                <input type="text" id="prod-categoria" required>
+            </div>
+            <div class="campo-modal">
+                <label for="prod-precio">Precio ($):</label>
+                <input type="number" id="prod-precio" min="0" required>
+            </div>
+            <div class="campo-modal">
+                <label for="prod-imagen">Imagen (ej.: default.jpg):</label>
+                <input type="text" id="prod-imagen" placeholder="default.jpg">
+            </div>
 
-            <div class="campo-modal">
-                <label for="prod-codigo">Codigo:</label>
-                <input type="number" id="prod-codigo" name="codigo" required>
-            </div>
-            <div class="campo-modal">
-                <label for="prod-codigo">Nombre:</label>
-                <input type="text" id="prod-nombre" name="codigo" required>
-            </div>
-            <div class="campo-modal">
-                <label for="prod-codigo">Categoria:</label>
-                <input type="text" id="prod-categoria" name="codigo" required>
-            </div>
-            <div class="campo-modal">
-                <label for="prod-codigo">Precio ($):</label>
-                <input type="number" id="prod-precio" name="codigo" required>
-            </div>
-            <div class="campo-modal">
-                <label for="prod-codigo">Imagen (ej.: default.jpg):</label>
-                <input type="text" id="prod-imagen" name="codigo" required>
-            </div>
             <fieldset class="especificaciones-grupo">
                 <legend>Especificaciones</legend>
 
@@ -93,36 +94,36 @@
                     <label for="prod-procesador">Procesador:</label>
                     <input type="text" id="prod-procesador">
                 </div>
-
-                <div class="campo-modal">
-                    <label for="prod-camaras">Camaras:</label>
-                    <input type="text" id="prod-camaras">
-                </div>
-
                 <div class="campo-modal">
                     <label for="prod-almacenamiento">Almacenamiento:</label>
                     <input type="text" id="prod-almacenamiento">
                 </div>
-
+                <div class="campo-modal">
+                    <label for="prod-camaras">Cámaras:</label>
+                    <input type="text" id="prod-camaras">
+                </div>
                 <div class="campo-modal">
                     <label for="prod-pantalla">Pantalla:</label>
                     <input type="text" id="prod-pantalla">
                 </div>
-
             </fieldset>
+
             <div class="form-botones">
                 <button type="submit" class="boton-dialogo guardar">Guardar</button>
                 <button type="button" id="btn-cancelar" class="boton-dialogo cancelar">Cancelar</button>
             </div>
-        <form>
+
+        </form>
      </dialog>
+
+
 
     <footer>
         <p>La Comercial - Todos los derechos reservados - 2026</p>
     </footer>
 
     <!-- Scripts -->
-     <script type="module" src="./controladores/lista-productos.js"></script>
+    <script type="module" src="./controladores/lista-productos.js"></script>
     <script src="./controladores/carrito-compras.js"></script>
 </body>
 </html>

@@ -263,8 +263,8 @@ h3 {
 footer {
     text-align: center;
 }
+
 /* --- ADMIN & DIALOG STYLES --- */
-/* --- Copiar en estilos.css al final de todo --- */
 .titulo-admin-flex {
     display: flex;
     justify-content: space-between;

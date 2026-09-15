@@ -1,41 +1,108 @@
 <?php
 // Requerimos el archivo modelos.php
 require_once 'modelos.php';
-// Si hay en parámetro tabla
-if(isset($_GET['tabla'])) { // Si está seteado el parámetro tabla
-    $tabla = new Modelo($_GET['tabla']); // Creamos el objeto tabla
 
+// Si hay un parámetro tabla
+if(isset($_GET['tabla'])) {
+    $tabla = new Modelo($_GET['tabla']); // Creamos el objeto $tabla   
 
-    if(isset($_GET['accion'])){
-        if($_GET['accion']== 'insertar'){
-            $valores = $_POST;
-        }
+    if(isset($_GET['id'])) { // Si está seteado el id
+        $tabla->setCriterio("id=" . $_GET['id']); // Establecemos el criterio
+    }
 
-        switch($_GET['accion']){
-            case 'seleccionar':
-               $datos = $tabla->seleccionar(); // Ejecutamos el método seleccionar
-               echo $datos; // Mostramos los datos 
-               break;
-            case 'insertar':
-                $id = $tabla->Insertar($valores);
-                if(id > 0) {
-                    $respuesta = [
-                        'succes' => true,
-                        'message' => 'Registro insetado correctamente',
-                        'id' => $id
-                    ];
+    if(isset($_GET['accion'])) { // Si está seteada la acción
+        if($_GET['accion'] == 'insertar' || $_GET['accion'] == 'actualizar') { // Si la acción es insertar o actualizar
+            $valores = $_POST; // Guardamos los valores que vienen desde el formulario   
+            
+            // ****  SUBIDA DE IMAGENES  **** //
+            if(                                         // si
+                isset($_FILES) &&                       // Ésta seteado $_FILES      y
+                isset($_FILES['imagen']) &&             // Está seteado imagen dentro  de $_FILES
+                !empty($_FILES['imagen']['name'] &&     // Si no está vacio el nombre y
+                !empty($_FILES['imagen']['tmp_name']))  // el nombre temporal
+            ) {
+                if(is_uploaded_file($_FILES['imagen']['tmp_name'])) {
+                    $nombre_temporal = $_FILES['imagen']['tmp_name'];
+                    $nombre = $_FILES['imagen']['name'];
+                    $destino = '../imagenes/productos/' . $nombre;
+
+                    if(move_uploaded_file($nombre_temporal, $destino)) {
+                        $respuesta = [
+                            'succes' => true,
+                            'message'=> 'Archivo subido correctamente a' . $destino
+                        ];
+                        $valores['imagen'] = $nombre;
+                    } else {
+                        $respuesta = [
+                            'success' => false,
+                            'message'=> 'No se ha podido subir el archivo'
+                        ];
+                        unlink(ini_get('upload_tmp_dir') . $nombre_temporal);
+
+                        
+                    }
                 } else {
                     $respuesta = [
                         'succes' => false,
-                        'message'=> 'Error al insertar el registro' 
+                        'message'=> 'el archivo no fue procesado correctamente'
                     ];
                 }
+            }
 
+            
+
+            
+        }        
+
+        switch ($_GET['accion']) { // Según la acción
+            case 'seleccionar':
+                $datos = $tabla->seleccionar(); // Ejecutamos el método seleccionar
+                print_r($datos) ; // Mostramos los datos
+                break;
+
+            case 'insertar':                
+                // Ejecutamos el método insertar y capturamos el ID
+                $id = $tabla->insertar($valores);
+    
+                // Verificamos si se obtuvo un ID válido
+                if ($id > 0) {
+                    $respuesta = [
+                        'success' => true,
+                        'message' => 'Registro insertado correctamente.',
+                        'id' => $id 
+                    ];
+                } else {
+                    // En caso de que falle la inserción
+                    $respuesta = [
+                        'success' => false,
+                        'message' => 'Error al insertar el registro.'
+                    ];
+                }
+                
+                // Siempre enviamos la respuesta JSON al final
                 echo json_encode($respuesta);
                 break;
 
-        }
+                case 'actualizar':
+                    $tabla->actualizar($valores);
+                    $respuesta = [
+                        'success' => true,
+                        'message' => 'Registro actualizado con éxito'
+                    ];
+                    echo json_encode($respuesta);
+                    break;
 
+                case 'eliminar':
+                    $tabla->eliminar();
+                    $respuesta = [
+                        'success' => true,
+                        'message' => 'Registro eliminado con éxito'
+                    ];
+                    echo json_encode($respuesta);
+                    break;
+
+            
+        }
     }
     
 }

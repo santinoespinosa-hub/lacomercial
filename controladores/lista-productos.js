@@ -1,6 +1,7 @@
-import { seleccionarProductos } from "../modelos/productos.js";
+import { seleccionarProductos, insertarProducto, actualizarProducto, eliminarProducto } from "../modelos/productos.js";
 
 // Elementos del DOM
+const alerta = document.querySelector('#alerta');
 const listaProductos = document.querySelector('#lista-productos');
 const btnNuevo = document.querySelector('#btn-nuevo-producto');
 const dialogo = document.querySelector('#dialogo-producto');
@@ -9,10 +10,12 @@ const btnCancelar = document.querySelector('#btn-cancelar');
 const dialogoTitulo = document.querySelector('#dialogo-titulo');
 const inputCodigo = document.querySelector('#prod-codigo');
 const inputModoEdicion = document.querySelector('#modo-edicion');
+const formImagen= document.querySelector('#form-imagen');
 
 // Variables
 let productos = [];
-let producto = {}
+let producto = {};
+let respuesta = {};
 
 document.addEventListener("DOMContentLoaded", ()=> {
     mostrarProductos();
@@ -35,38 +38,46 @@ const inicializarEventos = () => {
     });
 
     // Envío del formulario
-    formProducto.addEventListener('submit', (e) => {
+    formProducto.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const codigo = Number(inputCodigo.value);
-        const productoData = {
-            codigo,
-            nombre: document.getElementById('prod-nombre').value,
-            categoria: document.getElementById('prod-categoria').value,
-            precio: Number(document.getElementById('prod-precio').value),
-            imagen: document.getElementById('prod-imagen').value || 'nodisponible.png',
-            descripcion: {
-                procesador: document.getElementById('prod-procesador').value,
-                almacenamiento: document.getElementById('prod-almacenamiento').value,
-                camaras: document.getElementById('prod-camaras').value,
-                pantalla: document.getElementById('prod-pantalla').value
-            }
-        };
+        const id = producto.id;
+        const productoData = new FormData(formProducto);
 
         const esEdicion = inputModoEdicion.value === 'true';
-        let exito = false;
 
         if (esEdicion) {
-            exito = modificar(codigo, productoData);
+            respuesta = await actualizarProducto(productoData, id);
         } else {
-            exito = insertar(productoData);
+            respuesta = await insertarProducto(productoData);
         }
 
-        if(exito) {
+        if(respuesta.success) {
+            insertarAlerta(respuesta.message, 'success');
+            mostrarProductos();
+            dialogo.close();
+        } else {
+            insertarAlerta(respuesta.message, 'warning');
             dialogo.close();
         }
 
     });
+}
+
+/**
+ * Define el mensaje de alerta
+ * @param {*} mensaje El mensaje a mostrar
+ * @param {*} tipo El tipo de alerta (primary, secondary, success, warning, danger, ...)
+ */
+const insertarAlerta = (mensaje, tipo) => {
+    const envoltorio = document.createElement('div');
+    envoltorio.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismisible" role="alert">
+            <div>${mensaje}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    `;
+    alerta.append(envoltorio);
 }
 
 /**
@@ -89,7 +100,7 @@ const mostrarProductos = async () => {
             <article class="servicio">
                 <h3><span name="codigo">${producto.codigo}</span> - <span name="nombre">${producto.nombre}</span></h3>
                 <div class="servicio-icono">
-                    <img src="./imagenes/productos/${producto.imagen}" alt="">
+                    <img src="./imagenes/productos/${producto.imagen || 'nodisponible.png'}" alt="">
                 </div>
                 <div style="text-align: center">
                     <img src="./imagenes/memory.svg" alt=""> | 
@@ -101,55 +112,12 @@ const mostrarProductos = async () => {
                 <h4>$ <span name="precio">${producto.precio}</span>.-</h4>
                 <button class="boton" onclick="agregar(this)">Comprar</button>                
                 <div class="admin-opciones">
-                    <button class="boton-card-editar" data-codigo="${producto.codigo}">Editar</button>
-                    <button class="boton-card-eliminar" data-codigo="${producto.codigo}">Eliminar</button>
+                    <button class="boton-card-editar" data-id="${producto.id}">Editar</button>
+                    <button class="boton-card-eliminar" data-id="${producto.id}">Eliminar</button>
                 </div>
             </article>
         `
     ))
-}
-
-// Guardar productos en localStorage
-const guardarProductos = (lista) => {
-    localStorage.setItem('productos', JSON.stringify(lista));
-};
-
-/**
- * Agrega un nuevo producto a localStorage y vuelve a renderizar
- * @param {Object} productoNuevo - Objeto con los datos del nuevo producto
- * @returns {boolean} - true si se insertó correctamente, false si ya existe
- */
-export const insertar = (productoNuevo) => {
-    const productos = obtenerProductos();
-    const existe = productos.some(p => Number(p.codigo) === Number(productoNuevo.codigo));
-    if (existe) {
-        alert('Ya existe un producto con el código ' + productoNuevo.codigo);
-        return false;
-    }
-    productos.push(productoNuevo);
-    guardarProductos(productos);
-    mostrarProductos();
-    return true;
-};
-
-/**
- * Modifica un producto del localStorage y vuelve a renderizar
- * @param {*} codigo  - Código del producto a modificar
- * @param {Object} productoModificado - Objeto con los datos del producto modificado
- * @returns {boolean} - true si se modificó correctamente
- */
-export const modificar = (codigo, productoModificado) => {
-    const productos = obtenerProductos();
-    const index = productos.findIndex(p => Number(p.codigo) === Number(codigo));
-
-    if(index !== -1) {
-        productos[index] = { ...productos[index], ...productoModificado };
-        guardarProductos(productos);
-        mostrarProductos();
-        return true;
-    }
-
-    return false;
 }
 
 /**
@@ -157,11 +125,10 @@ export const modificar = (codigo, productoModificado) => {
  * @param {*} codigo - Código del producto a eliminar
  * @returns {boolean} - true si se eliminó correctamente
  */
-export const eliminar = (codigo) => {
-    if(confirm(`¿Está seguro que desea eliminar al producto código ${codigo}`)) {
-        const productos = obtenerProductos();
-        const filtrados = productos.filter(p => Number(p.codigo) !== Number(codigo));
-        guardarProductos(filtrados);
+export const eliminar = async (id) => {
+    if(confirm(`¿Está seguro que desea eliminar al producto código ${id}`)) {
+        respuesta = await eliminarProducto(id);
+        insertarAlerta(respuesta.message, 'danger');
         mostrarProductos();
         return true;
     }
@@ -173,9 +140,8 @@ export const eliminar = (codigo) => {
  * @param {*} codigo - Código del producto a modificar
  * @returns 
  */
-const abrirModalModificar = (codigo) => {
-    const productos = obtenerProductos();
-    const producto = productos.find(p => Number(p.codigo) === Number(codigo));
+const abrirModalModificar = (id) => {
+    producto = productos.find(p => Number(p.id) === Number(id));
     
     if(!producto) return;
     
@@ -186,14 +152,12 @@ const abrirModalModificar = (codigo) => {
     inputCodigo.disabled = true;
     
     document.getElementById('prod-nombre').value = producto.nombre;
-    document.getElementById('prod-categoria').value = producto.categoria;
     document.getElementById('prod-precio').value = producto.precio;
-    document.getElementById('prod-imagen').value = producto.imagen;
-    document.getElementById('prod-procesador').value = producto.descripcion.procesador;
-    document.getElementById('prod-almacenamiento').value = producto.descripcion.almacenamiento;
-    document.getElementById('prod-camaras').value = producto.descripcion.camaras;
-    document.getElementById('prod-pantalla').value = producto.descripcion.pantalla;
+    document.getElementById('prod-descripcion').value = producto.descripcion;
+   
     
+    formImagen.src = `./imagenes/productos/${producto.imagen}`;
+
     dialogo.showModal();
 }
 
@@ -201,10 +165,10 @@ const abrirModalModificar = (codigo) => {
 listaProductos.addEventListener('click', (e) => {
     const target = e.target;
     if(target.classList.contains('boton-card-editar')) {
-        const codigo = target.dataset.codigo;
-        abrirModalModificar(codigo);
+        const id = target.dataset.id;
+        abrirModalModificar(id);
     } else if(target.classList.contains('boton-card-eliminar')) {
-        const codigo = target.dataset.codigo;
-        eliminar(codigo);
+        const id = target.dataset.id;
+        eliminar(id);
     }
 })
